@@ -1,5 +1,7 @@
 import React from "react";
 import UserLogo from "./../user.svg";
+import * as propstypes from "prop-types";
+import { AppContext, actionsTypes } from "./../reducers/AppContext";
 
 const cardStyle = {
   width: "100%",
@@ -12,10 +14,33 @@ const userIconStyle = {
   backgroundColor: "#555",
 };
 
-function GroupChat() {
+function GroupChat(props) {
   console.log("GroupChat Component Render....");
 
-  const RenderBoxLeft = () => {
+  const [gcMessage, setGCMessage] = React.useState([]);
+  const message = React.useRef("");
+  const { currentUser } = React.useContext(AppContext);
+
+  function listener(mssg) {
+    setGCMessage([...gcMessage, mssg]);
+  }
+
+  function sendMessage() {
+    props.socket.emit("message", {
+      id: props.socket.id,
+      username: currentUser.state.username,
+      message: message.current,
+    });
+  }
+
+  React.useEffect(() => {
+    props.socket.addEventListener("message", listener);
+    return () => {
+      props.socket.removeEventListener("message", listener);
+    };
+  });
+
+  const RenderBoxLeft = ({ _ }) => {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
@@ -24,14 +49,14 @@ function GroupChat() {
           style={userIconStyle}
         />
         <small className="float-right">
-          <i>asdasdasd</i>
+          <i>{new Date(_.date).toDateString()}</i>
         </small>
-        <p className="pt-2 ml-2 float-left">zxczxczxc</p>
+        <p className="pt-2 ml-2 float-left">{_.message}</p>
       </div>
     );
   };
 
-  const RenderBoxRight = () => {
+  const RenderBoxRight = ({ _ }) => {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
@@ -40,35 +65,35 @@ function GroupChat() {
           style={userIconStyle}
         />
         <small className="float-left">
-          <i>asdasdasd</i>
+          <i>{new Date(_.date).toDateString()}</i>
         </small>
-        <p className="pt-2 mr-2 float-right">zxczxczxc</p>
+        <p className="pt-2 mr-2 float-right">{_.message}</p>
       </div>
     );
   };
 
   const RenderMeesageBox = () => {
-    return (
-      <React.Fragment>
-        <RenderBoxLeft />
-        <RenderBoxRight />
-        <RenderBoxLeft />
-        <RenderBoxRight />
-        <RenderBoxLeft />
-        <RenderBoxRight />
-        <RenderBoxLeft />
-        <RenderBoxRight />
-        <RenderBoxLeft />
-        <RenderBoxRight />
-      </React.Fragment>
+    return gcMessage.map((m, idx) =>
+      m.id === props.socket.id ? (
+        <RenderBoxRight key={idx} _={m} />
+      ) : (
+        <RenderBoxLeft key={idx} _={m} />
+      )
     );
   };
 
   const RenderMessageField = () => {
     return (
       <div className="input-group">
-        <input type="text" className="form-control" placeholder="Message" />
-        <button className="btn btn-success btn-sm">Send</button>
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Message"
+          onChange={(e) => (message.current = e.target.value)}
+        />
+        <button className="btn btn-success btn-sm" onClick={sendMessage}>
+          Send
+        </button>
       </div>
     );
   };
@@ -94,5 +119,9 @@ function GroupChat() {
 
   return <RenderGC />;
 }
+
+GroupChat.prototype = {
+  socket: propstypes.object.isRequired,
+};
 
 export default GroupChat;

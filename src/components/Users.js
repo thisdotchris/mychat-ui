@@ -1,6 +1,7 @@
 import React from "react";
 import UserIcon from "./../user.svg";
 import { AppContext, actionsTypes } from "./../reducers/AppContext";
+import * as services from "./../services/UserService";
 
 const userIconStyle = {
   width: "50px",
@@ -15,37 +16,36 @@ const listStyle = {
 };
 
 function Users() {
-  const [users, setUsers] = React.useState([
-    { id: 1, name: "user1" },
-    { id: 2, name: "user2" },
-    { id: 3, name: "user3" },
-    { id: 4, name: "user4" },
-    { id: 5, name: "user5" },
-    { id: 6, name: "user6" },
-    { id: 7, name: "user7" },
-    { id: 8, name: "user8" },
-    { id: 9, name: "user9" },
-  ]);
+  console.log("Users Component Render....");
+  const { users, boxes } = React.useContext(AppContext);
+
+  React.useEffect(() => {
+    if (users.state.users.length === 0) {
+      services.GetUsers().then((res) => {
+        users.dispatch({
+          type: actionsTypes.SET_USERS,
+          payload: { users: res.data },
+        });
+      });
+    }
+  });
 
   const RenderUsers = () => {
-    console.log("Users Component Render....");
-    const appContext = React.useContext(AppContext);
-
     function onUserClick(user) {
-      appContext.boxes.dispatch({
+      boxes.dispatch({
         type: actionsTypes.PUSH_BOX,
         payload: {
-          box: { _id: user.id, name: user.name },
+          box: { _id: user._id, name: user.username },
         },
       });
     }
 
     return (
       <div className="container-fluid list-group m-2" style={listStyle}>
-        {users.map((user) => {
+        {users.state.users.map((user) => {
           return (
             <div
-              key={user.id}
+              key={user._id}
               className="Hover list-group-item list-group-item-action clearfix"
               style={{ cursor: "pointer" }}
               onClick={() => onUserClick(user)}
@@ -55,7 +55,7 @@ function Users() {
                 className="rounded-circle float-left mr-3"
                 style={userIconStyle}
               />
-              <p className="mt-2">{user.name}</p>
+              <p className="mt-2">{user.username}</p>
             </div>
           );
         })}

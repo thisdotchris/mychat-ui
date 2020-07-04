@@ -8,6 +8,10 @@ import { AppContext } from "./reducers/AppContext";
 import * as BoxesReducer from "./reducers/BoxesReducer";
 import * as UsersReducer from "./reducers/UsersReducer";
 
+import io from "socket.io-client";
+
+const socket = io("http://localhost:4000/");
+
 function App() {
   const [boxesState, boxesDispatch] = React.useReducer(
     BoxesReducer.Reducer,
@@ -42,23 +46,30 @@ function App() {
   };
 
   function RenderFooter() {
-    return boxesState.boxes.length > 0 ? <Footer /> : null;
+    return boxesState.boxes.length > 0 ? <Footer socket={socket} /> : null;
   }
 
-  return (
-    <AppContext.Provider value={initialState}>
-      {/* <div className="container-fluid">
+  function RenderHome() {
+    return Object.keys(currentUserState).length === 0 ? (
+      <Login socket={socket} />
+    ) : (
+      <div className="container-fluid">
         <div className="row">
           <div className="col-md-3 mt-2">
             <Users />
           </div>
           <div className="col-md-6 mt-2">
-            <GroupChat />
+            <GroupChat socket={socket} />
           </div>
         </div>
         <RenderFooter />
-      </div> */}
-      <Login />
+      </div>
+    );
+  }
+
+  return (
+    <AppContext.Provider value={initialState}>
+      <RenderHome />
     </AppContext.Provider>
   );
 }

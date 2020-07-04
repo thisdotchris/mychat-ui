@@ -3,15 +3,16 @@ import * as actionTypes from "./ActionTypes";
 export const initialState = { users: [] };
 
 export function Reducer(state, action) {
-  switch (action.action) {
+  switch (action.type) {
     case actionTypes.SET_USERS:
-      state = { ...state, users: action.payload.users };
-      return state;
+      return (state = { ...state, users: action.payload.users });
     case actionTypes.ADD_USER:
-      state = { ...state, users: [...state.users, action.payload.user] };
-      return state;
+      return (state = {
+        ...state,
+        users: [...state.users, action.payload.user],
+      });
     case actionTypes.UPDATE_USER:
-      state = {
+      return (state = {
         ...state,
         users: [...state.users].map((user) => {
           if (user._id === action.payload.user._id) {
@@ -21,8 +22,7 @@ export function Reducer(state, action) {
           }
           return user;
         }),
-      };
-      return state;
+      });
     default:
       return state;
   }
