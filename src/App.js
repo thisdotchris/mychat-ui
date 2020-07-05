@@ -7,7 +7,7 @@ import Login from "./components/Login";
 import { AppContext } from "./reducers/AppContext";
 import * as BoxesReducer from "./reducers/BoxesReducer";
 import * as UsersReducer from "./reducers/UsersReducer";
-
+import * as GCReducer from "./reducers/GroupChat";
 import io from "socket.io-client";
 
 const socket = io("http://localhost:4000/");
@@ -21,6 +21,11 @@ function App() {
   const [usersState, usersDispatch] = React.useReducer(
     UsersReducer.Reducer,
     UsersReducer.initialState
+  );
+
+  const [gcState, gcDispatch] = React.useReducer(
+    GCReducer.Reducer,
+    GCReducer.initialState
   );
 
   const [currentUserState, currentUserDispatch] = React.useReducer(
@@ -43,6 +48,7 @@ function App() {
     currentUser: { state: currentUserState, dispatch: currentUserDispatch },
     users: { state: usersState, dispatch: usersDispatch },
     boxes: { state: boxesState, dispatch: boxesDispatch },
+    gc: { state: gcState, dispatch: gcDispatch },
   };
 
   function RenderFooter() {

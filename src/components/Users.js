@@ -17,7 +17,7 @@ const listStyle = {
 
 function Users() {
   console.log("Users Component Render....");
-  const { users, boxes } = React.useContext(AppContext);
+  const { users, boxes, currentUser } = React.useContext(AppContext);
 
   React.useEffect(() => {
     if (users.state.users.length === 0) {
@@ -31,11 +31,17 @@ function Users() {
   });
 
   const RenderUsers = () => {
-    function onUserClick(user) {
+    async function onUserClick(user) {
+      const socketID = await services.GetUserSocketID(user.username);
       boxes.dispatch({
         type: actionsTypes.PUSH_BOX,
         payload: {
-          box: { _id: user._id, name: user.username },
+          box: {
+            _id: user._id,
+            name: user.username,
+            messages: [],
+            socketID: socketID.data.socketID,
+          },
         },
       });
     }
@@ -43,21 +49,24 @@ function Users() {
     return (
       <div className="container-fluid list-group m-2" style={listStyle}>
         {users.state.users.map((user) => {
-          return (
-            <div
-              key={user._id}
-              className="Hover list-group-item list-group-item-action clearfix"
-              style={{ cursor: "pointer" }}
-              onClick={() => onUserClick(user)}
-            >
-              <img
-                src={UserIcon}
-                className="rounded-circle float-left mr-3"
-                style={userIconStyle}
-              />
-              <p className="mt-2">{user.username}</p>
-            </div>
-          );
+          if (user._id != currentUser.state._id) {
+            return (
+              <div
+                key={user._id}
+                className="Hover list-group-item list-group-item-action clearfix"
+                style={{ cursor: "pointer" }}
+                onClick={() => onUserClick(user)}
+              >
+                <img
+                  src={UserIcon}
+                  alt="user"
+                  className="rounded-circle float-left mr-3"
+                  style={userIconStyle}
+                />
+                <p className="mt-2">{user.username}</p>
+              </div>
+            );
+          }
         })}
       </div>
     );

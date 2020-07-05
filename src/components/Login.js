@@ -43,7 +43,7 @@ function Login(props) {
           style={{ width: "100%", margin: "2px" }}
           onClick={authUsername}
         >
-          Login
+          Join
         </button>
       </div>
     </div>

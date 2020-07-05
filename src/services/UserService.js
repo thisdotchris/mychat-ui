@@ -6,6 +6,10 @@ export function GetUsers() {
   return axios.get(apiURL);
 }
 
+export function GetUserSocketID(username) {
+  return axios.get(`${apiURL}/${username}`);
+}
+
 export async function CheckUser(username) {
   const checked = await axios.get(`${apiURL}/${username}`);
   if (

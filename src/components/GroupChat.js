@@ -17,12 +17,18 @@ const userIconStyle = {
 function GroupChat(props) {
   console.log("GroupChat Component Render....");
 
-  const [gcMessage, setGCMessage] = React.useState([]);
+  // const [gcMessage, setGCMessage] = React.useState([]);
   const message = React.useRef("");
-  const { currentUser } = React.useContext(AppContext);
+  const { currentUser, gc } = React.useContext(AppContext);
 
   function listener(mssg) {
-    setGCMessage([...gcMessage, mssg]);
+    // setGCMessage([...gcMessage, mssg]);
+    gc.dispatch({
+      type: actionsTypes.PUSH_GC,
+      payload: {
+        message: mssg,
+      },
+    });
   }
 
   function sendMessage() {
@@ -44,12 +50,16 @@ function GroupChat(props) {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
+          alt="user"
           src={UserLogo}
           className="rounded-circle float-left"
           style={userIconStyle}
         />
         <small className="float-right">
           <i>{new Date(_.date).toDateString()}</i>
+        </small>
+        <small className="float-left">
+          <p>{_.username}</p>
         </small>
         <p className="pt-2 ml-2 float-left">{_.message}</p>
       </div>
@@ -60,6 +70,7 @@ function GroupChat(props) {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
+          alt="user"
           src={UserLogo}
           className="rounded-circle float-right"
           style={userIconStyle}
@@ -67,13 +78,16 @@ function GroupChat(props) {
         <small className="float-left">
           <i>{new Date(_.date).toDateString()}</i>
         </small>
+        <small className="float-right">
+          <p>{_.username}</p>
+        </small>
         <p className="pt-2 mr-2 float-right">{_.message}</p>
       </div>
     );
   };
 
   const RenderMeesageBox = () => {
-    return gcMessage.map((m, idx) =>
+    return gc.state.messages.map((m, idx) =>
       m.id === props.socket.id ? (
         <RenderBoxRight key={idx} _={m} />
       ) : (

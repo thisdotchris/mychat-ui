@@ -1,6 +1,7 @@
 import React from "react";
 import UserLogo from "./../user.svg";
 import { AppContext, actionsTypes } from "./../reducers/AppContext";
+import * as propTypes from "prop-types";
 
 const footerStyle = {
   position: "absolute",
@@ -16,15 +17,41 @@ const userIconStyle = {
   backgroundColor: "#555",
 };
 
-function Footer() {
+function Footer(props) {
   console.log("Footer Component Render....");
 
-  const appContext = React.useContext(AppContext);
+  const pm = React.useRef("");
+
+  const { boxes, currentUser } = React.useContext(AppContext);
+
+  function listener(mssg) {
+    boxes.dispatch({
+      type: actionsTypes.UPDATE_BOX,
+      payload: {
+        box: {
+          socketID: mssg.socketID,
+          name: mssg.username,
+          message: mssg.message,
+          date: mssg.date,
+          _id: mssg._id,
+        },
+      },
+    });
+  }
+
+  function sendPM(recipient) {
+    props.socket.emit("pm", {
+      message: pm.current,
+      username: currentUser.state.username,
+      socketID: recipient.box.socketID,
+      _id: recipient.box._id,
+    });
+  }
 
   React.useEffect(() => {
-    console.log("Footer component mount...");
+    props.socket.addEventListener("pm", listener);
     return () => {
-      console.log("Footer component unmount");
+      props.socket.removeEventListener("pm", listener);
     };
   });
 
@@ -32,6 +59,7 @@ function Footer() {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
+          alt="user"
           src={UserLogo}
           className="rounded-circle float-left"
           style={userIconStyle}
@@ -48,6 +76,7 @@ function Footer() {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
+          alt="user"
           src={UserLogo}
           className="rounded-circle float-right"
           style={userIconStyle}
@@ -61,7 +90,7 @@ function Footer() {
   };
 
   function closeBox(id) {
-    appContext.boxes.dispatch({
+    boxes.dispatch({
       type: actionsTypes.REMOVE_BOX,
       payload: {
         _id: id,
@@ -85,12 +114,23 @@ function Footer() {
     );
   }
 
-  function RenderFooter() {
+  function RenderFooter(_) {
     return (
       <div className="input-group mb-1">
-        <input type="text" className="form-control" placeholder="Message" />
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Message"
+          onChange={(e) => (pm.current = e.target.value)}
+        />
         <div className="input-group-append">
-          <button className="btn btn-success" type="submit">
+          <button
+            className="btn btn-success"
+            type="submit"
+            onClick={() => {
+              sendPM(_);
+            }}
+          >
             Send
           </button>
         </div>
@@ -99,11 +139,11 @@ function Footer() {
   }
 
   const RenderBoxes = () => {
-    return appContext.boxes.state.boxes.map((box) => {
+    return boxes.state.boxes.map((box) => {
       return (
         <div
           key={box._id}
-          className="col"
+          className="col-md-4"
           style={{
             height: "400px",
           }}
@@ -114,12 +154,17 @@ function Footer() {
             </div>
             <div className="card-body">
               <div>
-                <RenderBoxLeft />
-                <RenderBoxRight />
+                {box.messages.map((m, idx) => {
+                  return m.name === currentUser.state.username ? (
+                    <RenderBoxRight key={idx} />
+                  ) : (
+                    <RenderBoxLeft key={idx} />
+                  );
+                })}
               </div>
             </div>
             <div className="card-footer clearfix">
-              <RenderFooter />
+              <RenderFooter box={box} />
             </div>
           </div>
         </div>
@@ -135,5 +180,9 @@ function Footer() {
     </div>
   );
 }
+
+Footer.prototype = {
+  socket: propTypes.object.isRequired,
+};
 
 export default Footer;

@@ -5,6 +5,7 @@ const initialState = {
   currentUser: {},
   boxes: [],
   users: [],
+  gc: [],
 };
 
 export const actionsTypes = ActionsTypes;
