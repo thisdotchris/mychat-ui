@@ -152,7 +152,10 @@ function Footer(props) {
             <div className="card-header">
               <RenderHeader box={box} />
             </div>
-            <div className="card-body">
+            <div
+              className="card-body"
+              style={{ height: "300px", overflow: "auto" }}
+            >
               <div>
                 {box.messages.map((m, idx) => {
                   return m.name === currentUser.state.username ? (

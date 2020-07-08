@@ -49,11 +49,11 @@ function Users() {
     return (
       <div className="container-fluid list-group m-2" style={listStyle}>
         {users.state.users.map((user) => {
-          if (user._id != currentUser.state._id) {
+          if (user._id !== currentUser.state._id) {
             return (
               <div
                 key={user._id}
-                className="Hover list-group-item list-group-item-action clearfix"
+                className="list-group-item list-group-item-action bg-primary clearfix"
                 style={{ cursor: "pointer" }}
                 onClick={() => onUserClick(user)}
               >

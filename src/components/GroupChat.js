@@ -116,14 +116,14 @@ function GroupChat(props) {
     return (
       <div className="container-fluid">
         <div className="card" style={cardStyle}>
-          <div className="card-header" />
+          <div className="card-header bg-primary" />
           <div
             className="card-body"
             style={{ maxHeight: "100%", overflow: "auto" }}
           >
             <RenderMeesageBox />
           </div>
-          <div className="card-footer">
+          <div className="card-footer bg-primary">
             <RenderMessageField />
           </div>
         </div>
