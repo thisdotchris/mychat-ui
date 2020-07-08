@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiURL = process.env.API_URL || "http://localhost:3000/mc/v1/users";
+const apiURL = "http://128.199.252.245:3001/mc/v1/users";
 
 export function GetUsers() {
   return axios.get(apiURL);

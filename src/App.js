@@ -9,8 +9,8 @@ import * as BoxesReducer from "./reducers/BoxesReducer";
 import * as UsersReducer from "./reducers/UsersReducer";
 import * as GCReducer from "./reducers/GroupChat";
 import io from "socket.io-client";
-console.log(process.env, 1111);
-const socket = io(process.env.SOCKET_URL || "http://localhost:4000/");
+
+const socket = io("http://128.199.252.245:3002/");
 
 function App() {
   const [boxesState, boxesDispatch] = React.useReducer(

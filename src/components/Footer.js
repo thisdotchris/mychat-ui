@@ -55,7 +55,7 @@ function Footer(props) {
     };
   });
 
-  const RenderBoxLeft = () => {
+  const RenderBoxLeft = ({ _ }) => {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
@@ -65,14 +65,17 @@ function Footer(props) {
           style={userIconStyle}
         />
         <small className="float-right">
-          <i>asdasdasd</i>
+          <i>{new Date(_.date).toDateString()}</i>
         </small>
-        <p className="pt-2 ml-2 float-left">zxczxczxc</p>
+        <small className="float-left">
+          <p>{_.username}</p>
+        </small>
+        <p className="pt-2 ml-2 float-left">{_.message}</p>
       </div>
     );
   };
 
-  const RenderBoxRight = () => {
+  const RenderBoxRight = ({ _ }) => {
     return (
       <div className="rounded p-2 mb-1 clearfix bg-success">
         <img
@@ -82,9 +85,12 @@ function Footer(props) {
           style={userIconStyle}
         />
         <small className="float-left">
-          <i>asdasdasd</i>
+          <i>{new Date(_.date).toDateString()}</i>
         </small>
-        <p className="pt-2 mr-2 float-right">zxczxczxc</p>
+        <small className="float-right">
+          <p>{_.username}</p>
+        </small>
+        <p className="pt-2 mr-2 float-right">{_.message}</p>
       </div>
     );
   };
@@ -158,10 +164,11 @@ function Footer(props) {
             >
               <div>
                 {box.messages.map((m, idx) => {
+                  console.log(m);
                   return m.name === currentUser.state.username ? (
-                    <RenderBoxRight key={idx} />
+                    <RenderBoxRight key={idx} _={m} />
                   ) : (
-                    <RenderBoxLeft key={idx} />
+                    <RenderBoxLeft key={idx} _={m} />
                   );
                 })}
               </div>
