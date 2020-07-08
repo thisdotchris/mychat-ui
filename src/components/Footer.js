@@ -164,7 +164,6 @@ function Footer(props) {
             >
               <div>
                 {box.messages.map((m, idx) => {
-                  console.log(m);
                   return m.name === currentUser.state.username ? (
                     <RenderBoxRight key={idx} _={m} />
                   ) : (
